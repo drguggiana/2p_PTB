@@ -1,0 +1,6 @@
+
+
+
+Place the script CreateDisplayWarp in the current matlab folder or anyway somewhere with higher priority than the default homonym function.
+
+Place the shader CurvatureCorrectionShader.frag in the PTB folder with GLSLShaders (e.g. /usr/share/matlab/site/m/psychtoolbox-3/PsychOpenGL/PsychGLSLShaders)
