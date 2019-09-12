@@ -9,7 +9,7 @@ Screen('Preference', 'SkipSyncTests', 1); %to skip synchronization failure set t
 calc_frames = 0 ; 
 frame_time = 0.139 ;    %0.113%0.0088%0.044%0.176%0.264;
 %define target eye (1 is left eye or single monitor/dichoptic=0. 2 is right eye)
-tar_eye = 2;
+tar_eye = 1;
 Param.tar_eye = tar_eye;
 Param.Dichoptic = 1 ; 
 Param.stereoMode = 0; %1
@@ -315,7 +315,7 @@ if any(abs(diff(sort(stim_id_list))) <= thr_stimid )
 end
 
 if     strfind(eval('computer'),'WIN')
-    save_dir=['C:\Users\mmccann\Documents\stim_data\' datestr(now, 'yyyy_mm_dd')];
+    save_dir=['C:\Users\drguggiana\Dropbox\Stimuli\Stim_data\' datestr(now, 'yyyy_mm_dd')];
 elseif strfind(eval('computer'),'LNX')
     save_dir=['/home/alessandro/Dropbox/Code/alessandro/stim_data/' datestr(now, 'yyyy_mm_dd')];
 end
