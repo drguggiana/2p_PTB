@@ -24,6 +24,41 @@ function [ LO, Param ] = SetLooming( win, LO, Param )
 % 		LO.gratingtex = CreateProceduralGratingMod(win, 'square', LO.gratingsize(1), LO.gratingsize(2), [LO.amplitude LO.amplitude LO.amplitude LO.amplitude], [LO.amplitude LO.amplitude LO.amplitude 0]);
 % 	end
 	
+    %% build a radial checkerboard
+    if LO.useChecker
+        % Define black and white
+        white = 1;
+        black = 0;
+        grey = white / 2;
+
+        % Here we calculate the radial distance from the center of the screen to
+        % the X and Y edges
+        xRadius = LO.gratingsize(1) / 2;
+        yRadius = LO.gratingsize(2) / 2;
+
+        % Screen resolution in Y
+        screenYpix = LO.gratingRect(4);
+
+        % Number of white/black circle pairs
+        rcycles = 8;
+
+        % Number of white/black angular segment pairs (integer)
+        tcycles = 12;
+
+        % Now we make our checkerboard pattern
+        xylim = 2 * pi * rcycles;
+        [x, y] = meshgrid(-xylim: 2 * xylim / (screenYpix - 1): xylim,...
+            -xylim: 2 * xylim / (screenYpix - 1): xylim);
+        at = atan2(y, x);
+        checks = ((1 + sign(sin(at * tcycles) + eps)...
+            .* sign(sin(sqrt(x.^2 + y.^2)))) / 2) * (white - black) + black;
+        circle = x.^2 + y.^2 <= xylim^2;
+        checks = circle .* checks + grey * ~circle;
+
+        % Now we make this into a PTB texture
+        LO.radialChecker = Screen('MakeTexture', win, checks);
+    end
+
 	%get the number of conditions
     n_speeds = length(LO.expansion_speeds);
     n_colors = size(LO.colors,1);

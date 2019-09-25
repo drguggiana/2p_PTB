@@ -1,4 +1,3 @@
-%
 function Drift_Loom
 clearvars -global -except Ard; clearvars; sca;
 % clear all; clear global; clear mex; sca; %#ok<CLMEX,CLALL>
@@ -8,32 +7,33 @@ Screen('Preference', 'SkipSyncTests', 1); %to skip synchronization failure set t
 
 calc_frames = 0 ; 
 frame_time = 0.139 ;    %0.113%0.0088%0.044%0.176%0.264;
+
 %define target eye (1 is left eye or single monitor/dichoptic=0. 2 is right eye)
-tar_eye = 2;
+tar_eye = 2 ;
 Param.tar_eye = tar_eye;
 Param.Dichoptic = 1 ; 
 Param.stereoMode = 0; %1
 Param.screenid  = 0 ; % it matters only if Param.Dichoptic=0;
 monitor_dist_cm  = 22;%13;
+
 rot_bias_left   = -0 ; % if eye_rot_bias>0, set [+x,-x] L,R; else if eye_rot_bias<0, set [-x,+x] L,R
 % rot_bias_right  = +0 ;
 % Set random or sequential sequence of stimuli (directions or positions):
 Param.seqmode='random'; %'sequential'
-% Param.seqmode='sequential';
+
 Param.fullyInterleaved = 1 ; %
-Param.prestimInterval  = 30 ; %sec
+Param.prestimInterval  = 30 ;    % [sec] This is the time before the protocol starts
 Param.usePhotodiode = 1;
 Param.useDAQdevice  = 0;
 Param.useArduino    = 1;
+
 test = 0 ;          % set to 1 if you want to test the stimulation without external triggering
 test_screen = 0 ;   % set to 1 if you want to test the stimulation on a smaller screen; 0=full field.
 loadMyGammaTable = 0 ;
 
-Param.StimProtocols.   DriftingGrating           = 1 ; % set to 2 for "navigation stim"
-Param.StimProtocols.   Looming                   = 0 ;
+Param.StimProtocols.   DriftingGrating           = 0 ; % set to 2 for "navigation stim", to 1 for normal
+Param.StimProtocols.   Looming                   = 1 ;
 Param.StimProtocols.   RFMapping                 = 0 ;
-
-
 
 %% DG
 reps       = [10];
@@ -41,7 +41,8 @@ stim_time  = [5];
 tf         = 2 ;    %[1 2 4];
 sf         = [0.02, 0.04];  %[0.02 0.04 0.08];
 directions = 12;
-angles     = [];%[0 90 180 270];
+angles     = [];      %[0 90 180 270] No longer used
+
 if Param.StimProtocols.DriftingGrating
     global DG %#ok<*TLEV>
     DG.n_reps = reps(1) ; % number of repetitions (1 repetition = each direction once).
@@ -74,6 +75,7 @@ if Param.StimProtocols.DriftingGrating
         *length(DG.cyclespersecond)*(DG.poststim_time+DG.stimulus_time);
     TimeAnimation = TimeAnimation + DG.time;
 end
+
 if Param.StimProtocols.Looming
     global LO %#ok<*TLEV>
     LO.n_reps = 10; % number of repetitions (1 repetition = each direction once).
@@ -83,8 +85,9 @@ if Param.StimProtocols.Looming
 %     LO.expansion_speed = 1.03;%factor of enlargement of the circle
 %     LO.positions = 8;%number of positions to sample
     LO.expansion_speeds = [5 10 20 40 80 160];%in degrees per second
-    LO.colors = [0 0 0;255 255 255];
-    LO.BackgroundLuminance = 127;
+    LO.useChecker = 1;          % if set to 1, uses a radial checkerboard instead of a expanding black or white circle
+    LO.colors = [0,0,0,0]; 
+    LO.BackgroundLuminance = 127;    % this gets overwrtten if Lo.colors is 'checker'
     LO.stim_id = 1.3;  stim_id_list=[stim_id_list;LO.stim_id];   % for the 'putsample' value
     if Param.StimProtocols.Looming==2
         LO.n_reps = 300 ;
@@ -95,6 +98,7 @@ if Param.StimProtocols.Looming
 %     LO.time = LO.n_reps*(LO.poststim_time+LO.stimulus_time);
 %     TimeAnimation = TimeAnimation + LO.time;
 end
+
 if ismember(1,Param.StimProtocols.RFMapping)
     global RFM
     RFM.n_reps = 10 ;
@@ -365,6 +369,7 @@ if ismember(1, Param.StimProtocols.RFMapping)
 end
 % make stimSeq a row numeric array:
 Param.stimSeq = cat(2, Param.stimSeq{:} );
+
 if Param.fullyInterleaved
     %if there is RF mapping
     if ismember(1, Param.StimProtocols.RFMapping)
@@ -377,8 +382,8 @@ if Param.fullyInterleaved
     end
 end
 
-Param.test=test;
-Param.test_screen=test_screen;
+Param.test = test;
+Param.test_screen = test_screen;
 Param.prestimInterval_fr=round(Param.prestimInterval/Param.ifi);
 save(stim_fname, 'Param');
 

@@ -43,21 +43,35 @@ end
 % 	% with the drifting grating:
 % 	Screen('BlendFunction', win, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 % end
-% Screen('BlendFunction', win, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-Screen('BlendFunction', win, GL_ONE, GL_ZERO);
-% % Disable alpha-blending, restrict following drawing to alpha channel:
+
+% The alpha channel is needed for presenting the radial checkerboard
+if stimtype.useChecker
+    Screen('BlendFunction', win, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);  
+else
+    Screen('BlendFunction', win, GL_ONE, GL_ZERO);
+end
+
+
+% Disable alpha-blending, restrict following drawing to alpha channel:
 % Screen('Blendfunction', win, GL_ONE, GL_ZERO, [0 0 0 1]);
 
 %define the rectangle that will bind the circle, using its max size
 baseRect = [0 0 1 1];
-
 [xCenter, yCenter] = RectCenter(stimtype.gratingRect);
+
 % Center the rectangle on the centre of the screen
 centeredRect = CenterRectOnPointd(baseRect, xCenter, yCenter);
+
 %define the max Diameter
 %max_diam = max(screenYpixels);
+
 % Sync us and get a time stamp
 vbl = Screen('Flip', win);
+
+% Draw the background after the flip so it isn't shwon yet
+if stimtype.useChecker
+    Screen('DrawTexture', win, stimtype.radialChecker);
+end
 
 %define the coordinates of the circle center
 circle_center_x = 0.5*stimtype.gratingsize(1);
@@ -69,9 +83,9 @@ circle_center_y = 0.5*stimtype.gratingsize(2);
 % %define the scale factor in pixels/frame
 % scaleFactor = max_size/n_frames;
 
-
 test=Param.test;
 tempo=[0 0];
+
 % seqangles = stimtype.seqangles';
 % angle = seqangles(stimtype.cnt)
 % if ~isfield(stimtype,'phase') || isempty(stimtype.phase)
@@ -89,8 +103,10 @@ vblendtime = vbl + seqtimes(stimtype.cnt) - Param.ifi;
 
 %define the scale factor for the expanding circle
 scaleFactor = seqspeeds(stimtype.cnt);
+
 %get the current color
 stim_color = stimtype.seqcolors(stimtype.cnt,:);
+
 %also print the current expansion speed
 fprintf(strcat('Current exp speed:',...
     num2str(stimtype.expansion_speeds(seqspeedorder(stimtype.cnt))),...
@@ -104,6 +120,7 @@ while vbl < vblendtime
 	% Update some grating animation parameters:
 % 	% Increment phase by 1 degree:
 % 	phase = phase + stimtype.phaseincrement;
+
 	% Draw the grating, centered on the screen, with given rotation 'angle',
 	% sine grating 'phase' shift and amplitude, rotating via set
 	% 'rotateMode'. Note that we pad the last argument with a 4th
@@ -115,9 +132,9 @@ while vbl < vblendtime
 %     end
 % 	Screen('DrawTexture', win, stimtype.gratingtex, [], stimtype.gratingRect, angle, [], [], [], [], Param.rotateMode, [phase, stimtype.freq_cppx, stimtype.amplitude, 0]);
     
-%variable intensity circle
-% Screen('FillOval', window, [1 1 1]*(n_frames-frames)/n_frames, centeredRect); 
-    Screen('FillOval', win,stim_color, centeredRect);
+    % variable intensity circle
+    % Screen('FillOval', window, [1 1 1]*(n_frames-frames)/n_frames, centeredRect); 
+    Screen('FillOval', win, stim_color, centeredRect);
      
     %update the size of the circle
     baseRect(3:4) = baseRect(3:4) + scaleFactor;
