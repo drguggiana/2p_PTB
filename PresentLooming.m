@@ -110,7 +110,7 @@ fprintf(strcat('Current exp speed:',...
 %         for i = 1 : frame_stimulus_dur
 frameNr = 0;
 
-% Draw the background after the flip so it isn't shwon yet
+% Draw the background after the flip so it isn't shown yet
 if stimtype.useChecker
     % Send the radial checkerboard to the screen
     Screen('DrawTexture', win, stimtype.radialChecker);
@@ -146,6 +146,7 @@ while vbl < vblendtime
     % variable intensity circle
     % Screen('FillOval', window, [1 1 1]*(n_frames-frames)/n_frames, centeredRect); 
     if stimtype.useChecker
+        Screen('DrawTexture', win, stimtype.radialChecker);
         Screen('FillArc', win, stim_color, centeredRect, startAngle, arcAngle);
     else        
         Screen('FillOval', win, stim_color, centeredRect);
