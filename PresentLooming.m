@@ -112,7 +112,18 @@ frameNr = 0;
 
 % Draw the background after the flip so it isn't shwon yet
 if stimtype.useChecker
+    % Send the radial checkerboard to the screen
     Screen('DrawTexture', win, stimtype.radialChecker);
+    
+    % build a mask to be updated later
+    % Start angle at which we would like our mask to begin (degrees)
+    startAngle = 0;
+
+    % Length of the arc (degrees)
+    arcAngle = 360;
+
+    % The rect in which we will define our arc
+    centeredRect = CenterRectOnPointd(baseRect, circle_center_x, circle_center_y);
 end
 
 while vbl < vblendtime
@@ -134,7 +145,11 @@ while vbl < vblendtime
       
     % variable intensity circle
     % Screen('FillOval', window, [1 1 1]*(n_frames-frames)/n_frames, centeredRect); 
-    Screen('FillOval', win, stim_color, centeredRect);
+    if stimtype.useChecker
+        Screen('FillArc', win, stim_color, centeredRect, startAngle, arcAngle);
+    else        
+        Screen('FillOval', win, stim_color, centeredRect);
+    end
      
     %update the size of the circle
     baseRect(3:4) = baseRect(3:4) + scaleFactor;
