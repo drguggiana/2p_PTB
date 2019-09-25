@@ -68,11 +68,6 @@ centeredRect = CenterRectOnPointd(baseRect, xCenter, yCenter);
 % Sync us and get a time stamp
 vbl = Screen('Flip', win);
 
-% Draw the background after the flip so it isn't shwon yet
-if stimtype.useChecker
-    Screen('DrawTexture', win, stimtype.radialChecker);
-end
-
 %define the coordinates of the circle center
 circle_center_x = 0.5*stimtype.gratingsize(1);
 circle_center_y = 0.5*stimtype.gratingsize(2);
@@ -115,6 +110,11 @@ fprintf(strcat('Current exp speed:',...
 %         for i = 1 : frame_stimulus_dur
 frameNr = 0;
 
+% Draw the background after the flip so it isn't shwon yet
+if stimtype.useChecker
+    Screen('DrawTexture', win, stimtype.radialChecker);
+end
+
 while vbl < vblendtime
     frameNr = frameNr + 1;
 	% Update some grating animation parameters:
@@ -131,7 +131,7 @@ while vbl < vblendtime
 %         Screen('SelectStereoDrawBuffer', win, winStereo);
 %     end
 % 	Screen('DrawTexture', win, stimtype.gratingtex, [], stimtype.gratingRect, angle, [], [], [], [], Param.rotateMode, [phase, stimtype.freq_cppx, stimtype.amplitude, 0]);
-    
+      
     % variable intensity circle
     % Screen('FillOval', window, [1 1 1]*(n_frames-frames)/n_frames, centeredRect); 
     Screen('FillOval', win, stim_color, centeredRect);
