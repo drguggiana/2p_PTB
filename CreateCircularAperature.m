@@ -1,4 +1,4 @@
-function [masktex, fullWindowMask] = CreateCircularGaussianAperature(radius, win, Param)
+function [masktex, fullWindowMask] = CreateCircularAperature(radius, win, Param)
 
     white = 255;
     grey = 127;
