@@ -3,7 +3,7 @@ function [stimtype, vbl] = PresentLooming( nidaq, screen, vbl, Param, stimtype, 
 [scriptPath, scriptName] = fileparts(mfilename('fullpath'));
 tic;
 
-if     Param.Dichoptic && Param.stereoMode==0 
+if Param.Dichoptic && Param.stereoMode==0 
 %     if     strcmp(inputname(5),'DG') || strcmp(inputname(5),'DG3')
         win=screen(tar_eye);
 %     elseif strcmp(inputname(5),'DG2')|| strcmp(inputname(5),'DG4')
@@ -44,16 +44,9 @@ end
 % 	Screen('BlendFunction', win, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 % end
 
-% The alpha channel is needed for presenting the radial checkerboard
-if stimtype.useChecker
-    Screen('BlendFunction', win, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);  
-else
-    Screen('BlendFunction', win, GL_ONE, GL_ZERO);
-end
-
-
 % Disable alpha-blending, restrict following drawing to alpha channel:
 % Screen('Blendfunction', win, GL_ONE, GL_ZERO, [0 0 0 1]);
+Screen('BlendFunction', win, GL_ONE, GL_ZERO);
 
 %define the rectangle that will bind the circle, using its max size
 baseRect = [0 0 1 1];
@@ -110,21 +103,15 @@ fprintf(strcat('Current exp speed:',...
 %         for i = 1 : frame_stimulus_dur
 frameNr = 0;
 
-% Draw the background after the flip so it isn't shown yet
+% Build the checkerboard stimulus and mask
 if stimtype.useChecker
-    % Send the radial checkerboard to the screen
-    Screen('DrawTexture', win, stimtype.radialChecker);
-    
-    % build a mask to be updated later
-    % Start angle at which we would like our mask to begin (degrees)
-    startAngle = 0;
-
-    % Length of the arc (degrees)
-    arcAngle = 360;
-
-    % The rect in which we will define our arc
-    centeredRect = CenterRectOnPointd(baseRect, circle_center_x, circle_center_y);
+    % We need to re-enable the alpha blending for the mask
+    Screen('BlendFunction', win, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 end
+
+% build a mask to be updated later
+radius = 5;
+
 
 while vbl < vblendtime
     frameNr = frameNr + 1;
@@ -146,14 +133,21 @@ while vbl < vblendtime
     % variable intensity circle
     % Screen('FillOval', window, [1 1 1]*(n_frames-frames)/n_frames, centeredRect); 
     if stimtype.useChecker
-        Screen('DrawTexture', win, stimtype.radialChecker);
-        Screen('FillArc', win, stim_color, centeredRect, startAngle, arcAngle);
+        
+        [masktex, fullWindowMask] = CreateCircularGaussianAperature(radius, win, Param);
+        % Draw the gaussian apertures  into our full screen aperture mask
+        Screen('DrawTextures', fullWindowMask, masktex);
+        Screen('DrawTexture', win, stimtype.radialCheckerboardTexture);
+        Screen('DrawTexture', win, fullWindowMask);
+           
     else        
         Screen('FillOval', win, stim_color, centeredRect);
+        Screen('FillArc', win, stimtype.BackgroundLuminance, centeredRect, startAngle, arcAngle);
     end
      
     %update the size of the circle
     baseRect(3:4) = baseRect(3:4) + scaleFactor;
+    radius = radius + scaleFactor;
     
     % Center the rectangle on the centre of the screen
     centeredRect = CenterRectOnPointd(baseRect, circle_center_x, circle_center_y);

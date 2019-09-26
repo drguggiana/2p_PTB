@@ -27,17 +27,17 @@ function [ LO, Param ] = SetLooming( win, LO, Param )
     %% build a radial checkerboard
     if LO.useChecker
         % Define black and white
-        white = 1;
-        black = 0;
+        white = WhiteIndex(Param.tar_eye);
+        black = BlackIndex(Param.tar_eye);
         grey = white / 2;
 
         % Here we calculate the radial distance from the center of the screen to
         % the X and Y edges
-        xRadius = LO.gratingsize(1) / 2;
-        yRadius = LO.gratingsize(2) / 2;
+        xRadius = Param.screenRect(3) / 2;
+        yRadius = Param.screenRect(4) / 2;
 
         % Screen resolution in Y
-        screenYpix = LO.gratingRect(4);
+        screenYpix = Param.screenRect(4);
 
         % Number of white/black circle pairs
         rcycles = 8;
@@ -55,8 +55,10 @@ function [ LO, Param ] = SetLooming( win, LO, Param )
         circle = x.^2 + y.^2 <= xylim^2;
         checks = circle .* checks + grey * ~circle;
 
-        % Now we make this into a PTB texture
-        LO.radialChecker = Screen('MakeTexture', win, checks);
+        %LO.checks = floor(checks.*255);
+        LO.checks = checks;
+        LO.radialCheckerboardTexture = Screen('MakeTexture', win, checks);
+ 
     end
 
 	%get the number of conditions

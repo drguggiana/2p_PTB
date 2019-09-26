@@ -22,7 +22,7 @@ rot_bias_left   = -0 ; % if eye_rot_bias>0, set [+x,-x] L,R; else if eye_rot_bia
 Param.seqmode='random'; %'sequential'
 
 Param.fullyInterleaved = 1 ; %
-Param.prestimInterval  = 5 ;    % [sec] This is the time before the protocol starts
+Param.prestimInterval  = 30 ;    % [sec] This is the time before the protocol starts
 Param.usePhotodiode = 1;
 Param.useDAQdevice  = 0;
 Param.useArduino    = 1;
@@ -32,7 +32,7 @@ test_screen = 0 ;   % set to 1 if you want to test the stimulation on a smaller 
 loadMyGammaTable = 0 ;
 
 Param.StimProtocols.   DriftingGrating           = 0 ; % set to 2 for "navigation stim", to 1 for normal
-Param.StimProtocols.   Looming                   = 1 ;
+Param.StimProtocols.   Looming                   = 2 ;
 Param.StimProtocols.   RFMapping                 = 0 ;
 
 %% DG
@@ -86,9 +86,12 @@ if Param.StimProtocols.Looming
 %     LO.positions = 8;%number of positions to sample
     LO.expansion_speeds = [5 10 20 40 80 160];%in degrees per second
     LO.useChecker = 1;          % if set to 1, uses a radial checkerboard instead of a expanding black or white circle
-    LO.colors = [255,255,255,0]; 
+    LO.colors = [255,255,255]; 
     LO.BackgroundLuminance = 127;    % this gets overwrtten if Lo.colors is 'checker'
     LO.stim_id = 1.3;  stim_id_list=[stim_id_list;LO.stim_id];   % for the 'putsample' value
+    if LO.useChecker
+        LO.colors = [255,255,255];
+    end
     if Param.StimProtocols.Looming==2
         LO.n_reps = 300 ;
 %         LO.stimulus_time = 2 ;
@@ -172,10 +175,10 @@ end
 %         oldRes = SetResolution(Param.screenid(1), 1600, 900);
 %     end
 % end
-if     test_screen == 0
+if test_screen == 0
     if loadMyGammaTable
         % get calibrated gammaTable variable:
-        if     strfind(eval('computer'),'WIN')
+        if strfind(eval('computer'),'WIN')
             load('C:\Users\lachioma\Dropbox\Code\alessandro\screen_calibration\2016-05-04\MyGammaTable.mat');
         elseif strfind(eval('computer'),'LNX')
             load('/home/alessandro/Dropbox/Code/alessandro/screen_calibration/2016-05-04/MyGammaTable.mat');
@@ -210,7 +213,7 @@ if     test_screen == 0
     else % Dichoptic==0
         [screen(1), Param.screenRect] = Screen('OpenWindow', Param.screenid(1), 200 );
         if loadMyGammaTable
-            if     Param.screenid(1) == 1
+            if Param.screenid(1) == 1
                 Screen('LoadNormalizedGammaTable', screen(1), gammaTable1*[1 1 1]);
             elseif Param.screenid(1) == 2
                 Screen('LoadNormalizedGammaTable', screen(1), gammaTable2*[1 1 1]);
@@ -399,7 +402,7 @@ if Param.StimProtocols.RFMapping
     prestimColor = RFM.BackgroundLuminance ;
 end
 
-if     Param.stereoMode==0
+if Param.stereoMode==0
     for i=1:length(screen)
         Screen('FillRect', screen(i), prestimColor);
         Screen('Flip', screen(i));
@@ -439,8 +442,8 @@ vbl = Screen('Flip', screen(1));
 
 tic_start=tic;
 for i = 1:Param.prestimInterval_fr
-    if     Param.stereoMode==0
-        for i=1:length(screen)
+    if Param.stereoMode==0
+        for i = 1:length(screen)
             vbl = Screen('Flip', screen(i), vbl + 0.5 * Param.ifi);
         end
     else
@@ -448,6 +451,7 @@ for i = 1:Param.prestimInterval_fr
     end
     Exit_If_Shift(test,nidaq)
 end
+
 % Animation loop: press 'shift' to exit
 % (stim files are saved when you interrupt)
 for s = 1:length(Param.stimSeq) % for all stimuli and reps
