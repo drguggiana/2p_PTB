@@ -134,7 +134,7 @@ while vbl < vblendtime
     % Screen('FillOval', window, [1 1 1]*(n_frames-frames)/n_frames, centeredRect); 
     if stimtype.useChecker
         
-        [masktex, fullWindowMask] = CreateCircularGaussianAperature(radius, win, Param);
+        [masktex, fullWindowMask] = CreateCircularAperature(radius, win, Param);
         % Draw the gaussian apertures  into our full screen aperture mask
         Screen('DrawTextures', fullWindowMask, masktex);
         Screen('DrawTexture', win, stimtype.radialCheckerboardTexture);
