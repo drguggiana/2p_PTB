@@ -142,7 +142,6 @@ while vbl < vblendtime
            
     else        
         Screen('FillOval', win, stim_color, centeredRect);
-        Screen('FillArc', win, stimtype.BackgroundLuminance, centeredRect, startAngle, arcAngle);
     end
      
     %update the size of the circle

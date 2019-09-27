@@ -85,7 +85,7 @@ if Param.StimProtocols.Looming
 %     LO.expansion_speed = 1.03;%factor of enlargement of the circle
 %     LO.positions = 8;%number of positions to sample
     LO.expansion_speeds = [5 10 20 40 80 160];%in degrees per second
-    LO.useChecker = 1;          % if set to 1, uses a radial checkerboard instead of a expanding black or white circle
+    LO.useChecker = 0;          % if set to 1, uses a radial checkerboard instead of a expanding black or white circle
     LO.colors = [255,255,255]; 
     LO.BackgroundLuminance = 127;    % this gets overwrtten if Lo.colors is 'checker'
     LO.stim_id = 1.3;  stim_id_list=[stim_id_list;LO.stim_id];   % for the 'putsample' value
