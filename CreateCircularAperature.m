@@ -5,12 +5,11 @@ function [masktex, fullWindowMask] = CreateCircularAperature(radius, win, Param)
     screenYpix = Param.screenRect(4) / 2;
     
     % Make the mask to cover the texture
-    rad = 2*pi*radius;
     [xm, ym] = meshgrid(-screenYpix:screenYpix, -screenYpix:screenYpix);
     [s1, s2] = size(xm);
     
     % Define the circular aperature as a boolean mask
-    circle = xm.^2 + ym.^2 <= rad^2;
+    circle = xm.^2 + ym.^2 <= radius^2;
     
     mask = ones(s1, s2, 2)*grey;
     mask(:,:,2) = ~circle .* white; 
