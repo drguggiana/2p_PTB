@@ -110,7 +110,7 @@ if stimtype.useChecker
 end
 
 % build a mask to be updated later
-radius = 5;
+radius = 1;
 
 
 while vbl < vblendtime
@@ -147,7 +147,10 @@ while vbl < vblendtime
      
     %update the size of the circle
     baseRect(3:4) = baseRect(3:4) + scaleFactor;
-    radius = radius + scaleFactor;
+    
+    % update radius of circle mask so that expansion is the same as the
+    % baserect for the colored dot
+    radius = radius + (scaleFactor*sqrt(2));
     
     % Center the rectangle on the centre of the screen
     centeredRect = CenterRectOnPointd(baseRect, circle_center_x, circle_center_y);
