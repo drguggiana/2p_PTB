@@ -143,7 +143,7 @@ while vbl < vblendtime
         Screen('DrawTexture', win, fullWindowMask);
        % update radius of circle mask so that expansion is the same as the
         % baserect for the colored dot
-        radius = radius + scaleFactor;
+        radius = (radius + scaleFactor/2);
     else        
         Screen('FillOval', win, stim_color, centeredRect);
         %update the size of the circle

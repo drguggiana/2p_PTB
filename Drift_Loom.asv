@@ -91,6 +91,7 @@ if Param.StimProtocols.Looming
     LO.stim_id = 1.3;  stim_id_list=[stim_id_list;LO.stim_id];   % for the 'putsample' value
     if LO.useChecker
         LO.colors = [255,255,255];
+       % LO.expansion_speeds = LO.expansion_speeds .* sqrt(2);
     end
     if Param.StimProtocols.Looming==2
         LO.n_reps = 300 ;
@@ -290,11 +291,11 @@ Param.screenSize_cm_horz = screenSize_cm_horz;
 if Param.StimProtocols.Looming
     %calculate the stimulus time based on the size of the screen and the
     %specified angular expansion speeds
-    %get 100% of the screen y size in degrees
+    %get 9100% of the screen y size in degrees
     screen_angularSize = Param.screenRect(4)*degperpix;
     
     %calculate times of the stimulation based on the expansion speed
-    LO.time_perstimulus = screen_angularSize./LO.expansion_speeds;
+    LO.time_perstimulus = screen_angularSize./(LO.expansion_speeds.*sqrt(2));
     LO.time = sum(LO.time_perstimulus + LO.poststim_time).*LO.n_reps.*size(LO.colors,1);
     TimeAnimation = TimeAnimation + LO.time;
 end
