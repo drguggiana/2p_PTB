@@ -27,8 +27,8 @@ Param.usePhotodiode = 1;
 Param.useDAQdevice  = 0;
 Param.useArduino    = 1;
 
-test = 0 ;          % set to 1 if you want to test the stimulation without external triggering
-test_screen = 0 ;   % set to 1 if you want to test the stimulation on a smaller screen; 0=full field.
+test = 1 ;          % set to 1 if you want to test the stimulation without external triggering
+test_screen = 1 ;   % set to 1 if you want to test the stimulation on a smaller screen; 0=full field.
 loadMyGammaTable = 0 ;
 
 Param.StimProtocols.   DriftingGrating           = 0 ; % set to 2 for "navigation stim", to 1 for normal

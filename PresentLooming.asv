@@ -110,10 +110,12 @@ if stimtype.useChecker
     % Make the full window texture
     fullWindowMask = Screen('MakeTexture', win, ...
         ones(Param.screenRect(4), Param.screenRect(4)) .* stimtype.BackgroundLuminance);
+    % build a mask to be updated later, but tie it to the size of the
+    % baseRect of the normal looming stimulus
+    radius = baseRect(3);
 end
 
-% build a mask to be updated later
-radius = 0.5;
+
 
 
 while vbl < vblendtime
@@ -133,25 +135,29 @@ while vbl < vblendtime
 %     end
 % 	Screen('DrawTexture', win, stimtype.gratingtex, [], stimtype.gratingRect, angle, [], [], [], [], Param.rotateMode, [phase, stimtype.freq_cppx, stimtype.amplitude, 0]);
       
+
     % variable intensity circle
     % Screen('FillOval', window, [1 1 1]*(n_frames-frames)/n_frames, centeredRect); 
     if stimtype.useChecker
+        % update radius of circle mask so that expansion is the same as the
+        % baserect for the colored dot
+        radius = baseRect(3)*2/pi;
         masktex = CreateCircularAperature(radius, win, Param);
         % Draw the gaussian apertures  into our full screen aperture mask
         Screen('DrawTextures', fullWindowMask, masktex);
         Screen('DrawTexture', win, stimtype.radialCheckerboardTexture);
         Screen('DrawTexture', win, fullWindowMask);
-       % update radius of circle mask so that expansion is the same as the
-        % baserect for the colored dot
-        radius = (radius + scaleFactor/2);
+        
     else        
-        Screen('FillOval', win, stim_color, centeredRect);
+        Screen('FillOval', win, stim_color, centeredRect);  
         %update the size of the circle
         baseRect(3:4) = baseRect(3:4) + scaleFactor;
         % Center the rectangle on the centre of the screen
         centeredRect = CenterRectOnPointd(baseRect, circle_center_x, circle_center_y);
     end
        
+     
+     
 % 	if stimtype.drawMask == 1
 %         Screen('BlendFunction', win, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 % 		% Draw mask over grating:
