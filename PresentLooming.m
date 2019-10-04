@@ -105,19 +105,12 @@ frameNr = 0;
 
 % Build the checkerboard stimulus and mask
 if stimtype.useChecker
-    screenYpix = Param.screenRect(4)/2;
     % We need to re-enable the alpha blending for the mask
     Screen('BlendFunction', win, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    % Make the full window texture
-    aperature = Screen('MakeTexture', win, ...
-        ones(Param.screenRect(4), Param.screenRect(4)) .* stimtype.BackgroundLuminance);
-    % build a mask to be updated later, but tie it to the size of the
-    % baseRect of the normal looming stimulus
-    [xm, ym] = meshgrid(-(screenYpix-1):screenYpix, -(screenYpix-1):screenYpix);
-    radius = baseRect(4)/2;
+    % Make the full window texture that is gray
+    aperture = Screen('MakeTexture', win, ...
+        ones(Param.screenRect(4), Param.screenRect(3)) .* stimtype.BackgroundLuminance);
 end
-
-
 
 
 while vbl < vblendtime
@@ -137,29 +130,23 @@ while vbl < vblendtime
 %     end
 % 	Screen('DrawTexture', win, stimtype.gratingtex, [], stimtype.gratingRect, angle, [], [], [], [], Param.rotateMode, [phase, stimtype.freq_cppx, stimtype.amplitude, 0]);
       
-
     % variable intensity circle
     % Screen('FillOval', window, [1 1 1]*(n_frames-frames)/n_frames, centeredRect); 
     if stimtype.useChecker
         
-        masktex = CreateCircularAperature(radius*2/pi, win, Param);
         % Draw the gaussian apertures  into our full screen aperture mask
-        Screen('DrawTextures', aperature, masktex);
+        Screen('FillOval', aperture, [255 255 255 0], centeredRect);
         Screen('DrawTexture', win, stimtype.radialCheckerboardTexture);
-        Screen('DrawTexture', win, aperature);
-        % update radius of circle mask so that expansion is the same as the
-        % baserect for the colored dot
-        radius = radius + scaleFactor;
+        Screen('DrawTexture', win, aperture);
     else        
         Screen('FillOval', win, stim_color, centeredRect);  
-        %update the size of the circle
-        baseRect(3:4) = baseRect(3:4) + scaleFactor;
-        % Center the rectangle on the centre of the screen
-        centeredRect = CenterRectOnPointd(baseRect, circle_center_x, circle_center_y);
     end
-       
      
-     
+    %update the size of the circle
+    baseRect(3:4) = baseRect(3:4) + scaleFactor;
+    % Center the rectangle on the centre of the screen
+    centeredRect = CenterRectOnPointd(baseRect, circle_center_x, circle_center_y);
+   
 % 	if stimtype.drawMask == 1
 %         Screen('BlendFunction', win, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 % 		% Draw mask over grating:
