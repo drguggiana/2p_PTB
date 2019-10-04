@@ -105,14 +105,16 @@ frameNr = 0;
 
 % Build the checkerboard stimulus and mask
 if stimtype.useChecker
+    screenYpix = Param.screenRect(4)/2;
     % We need to re-enable the alpha blending for the mask
     Screen('BlendFunction', win, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     % Make the full window texture
-    fullWindowMask = Screen('MakeTexture', win, ...
+    aperature = Screen('MakeTexture', win, ...
         ones(Param.screenRect(4), Param.screenRect(4)) .* stimtype.BackgroundLuminance);
     % build a mask to be updated later, but tie it to the size of the
     % baseRect of the normal looming stimulus
-    radius = baseRect(3);
+    [xm, ym] = meshgrid(-(screenYpix-1):screenYpix, -(screenYpix-1):screenYpix);
+    radius = baseRect(4)/2;
 end
 
 
@@ -142,9 +144,9 @@ while vbl < vblendtime
         
         masktex = CreateCircularAperature(radius*2/pi, win, Param);
         % Draw the gaussian apertures  into our full screen aperture mask
-        Screen('DrawTextures', fullWindowMask, masktex);
+        Screen('DrawTextures', aperature, masktex);
         Screen('DrawTexture', win, stimtype.radialCheckerboardTexture);
-        Screen('DrawTexture', win, fullWindowMask);
+        Screen('DrawTexture', win, aperature);
         % update radius of circle mask so that expansion is the same as the
         % baserect for the colored dot
         radius = radius + scaleFactor;
