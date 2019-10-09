@@ -1,3 +1,4 @@
+	
 % set some DriftingGratings parameters, saved in the structure 'LO'.
 function [ LO, Param ] = SetLooming( win, LO, Param )
 [scriptPath, scriptName] = fileparts(mfilename('fullpath'));
@@ -30,12 +31,16 @@ function [ LO, Param ] = SetLooming( win, LO, Param )
         black = BlackIndex(Param.tar_eye);
         grey = white / 2;
 
+        % Here we calculate the radial distance from the center of the screen to
+        % the X and Y edges
+        xRadius = Param.screenRect(3) / 2;
+        yRadius = Param.screenRect(4) / 2;
+
         % Screen resolution in Y
         screenYpix = Param.screenRect(4);
 
         % Number of white/black circle pairs
-        degpercycle = 5;
-        rcycles = LO.screen_angularSize/deg/;
+        rcycles = 8;
 
         % Number of white/black angular segment pairs (integer)
         tcycles = 12;

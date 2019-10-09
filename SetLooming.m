@@ -1,3 +1,4 @@
+	
 % set some DriftingGratings parameters, saved in the structure 'LO'.
 function [ LO, Param ] = SetLooming( win, LO, Param )
 [scriptPath, scriptName] = fileparts(mfilename('fullpath'));
@@ -30,22 +31,26 @@ function [ LO, Param ] = SetLooming( win, LO, Param )
         black = BlackIndex(Param.tar_eye);
         grey = white / 2;
 
+        % Here we calculate the radial distance from the center of the screen to
+        % the X and Y edges
+        xRadius = Param.screenRect(3) / 2;
+        yRadius = Param.screenRect(4) / 2;
+
         % Screen resolution in Y
         screenYpix = Param.screenRect(4);
 
         % Number of white/black circle pairs
-        LO.degpercycle = 5;
-        LO.rcycles = floor(LO.screen_angularSize/LO.degpercycle);
+        rcycles = 8;
 
         % Number of white/black angular segment pairs (integer)
-        LO.tcycles = 12;
+        tcycles = 12;
 
         % Now we make our checkerboard pattern
-        xylim = 2 * pi * LO.rcycles;
+        xylim = 2 * pi * rcycles;
         [x, y] = meshgrid(-xylim: 2 * xylim / (screenYpix - 1): xylim,...
             -xylim: 2 * xylim / (screenYpix - 1): xylim);
         at = atan2(y, x);
-        checks = ((1 + sign(sin(at * LO.tcycles) + eps)...
+        checks = ((1 + sign(sin(at * tcycles) + eps)...
             .* sign(sin(sqrt(x.^2 + y.^2)))) / 2) * (white - black) + black;
         circle = x.^2 + y.^2 <= xylim^2;
         checks = circle .* checks + grey * ~circle;
@@ -57,20 +62,19 @@ function [ LO, Param ] = SetLooming( win, LO, Param )
 	%get the number of conditions
     n_speeds = length(LO.expansion_speeds);
     n_colors = size(LO.colors,1);
-    n_alphas = length(LO.alphas);
     
     %number of conditions
-    cond_num = n_speeds*n_colors*n_alphas;
+    cond_num = n_speeds*n_colors;
     %assemble a matrix with all the parameters to be varied within a trial
     LO.paramorder = zeros(LO.n_reps,cond_num,2);
     
     for r = 1 : LO.n_reps
         switch Param.seqmode
             case 'random'
-                [x,y] = ind2sub([n_speeds,n_colors,n_alphas],randperm(cond_num));
-                LO.paramorder(r,:,:) = permute(cat(1,x,y),[4 2 1]);
+                [x,y] = ind2sub([n_speeds,n_colors],randperm(cond_num));
+                LO.paramorder(r,:,:) = permute(cat(1,x,y),[3 2 1]);
             case 'sequential'
-                [x,y] = ind2sub([n_speeds,n_colors,n_alphas],1:cond_num);
+                [x,y] = ind2sub([n_speeds,n_colors],1:cond_num);
                 LO.paramorder(r,:,:) = cat(2,x,y);
         end
     end
@@ -78,9 +82,8 @@ function [ LO, Param ] = SetLooming( win, LO, Param )
     %define the expansion speeds in terms of pix/s
     LO.seqspeeds = pixperdeg.*LO.expansion_speeds(LO.paramorder(:,:,1)).*Param.ifi;
     LO.seqcolors = LO.colors(LO.paramorder(:,:,2)',:);
-    LO.seqalphas = LO.alphas(LO.paramorder(:,:,3)',:);
     LO.seqtimes = LO.time_perstimulus(LO.paramorder(:,:,1));
-    Param.stimSeq(end+1,1) = { repmat(LO.stim_id, 1,n_colors*n_speeds*LO.n_reps*LO.n_alphas) };
+    Param.stimSeq(end+1,1) = { repmat(LO.stim_id, 1,n_colors*n_speeds*LO.n_reps) };
     LO.cnt=1;
     
 %     for r = 1 : LO.n_reps
