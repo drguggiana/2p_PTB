@@ -62,25 +62,25 @@ function [ LO, Param ] = SetLooming( win, LO, Param )
     %number of conditions
     cond_num = n_speeds*n_colors*n_alphas;
     %assemble a matrix with all the parameters to be varied within a trial
-    LO.paramorder = zeros(LO.n_reps,cond_num,2);
+    LO.paramorder = zeros(LO.n_reps,cond_num,3);
     
     for r = 1 : LO.n_reps
         switch Param.seqmode
             case 'random'
-                [x,y] = ind2sub([n_speeds,n_colors,n_alphas],randperm(cond_num));
-                LO.paramorder(r,:,:) = permute(cat(1,x,y),[4 2 1]);
+                [x,y,z] = ind2sub([n_speeds,n_colors,n_alphas],randperm(cond_num));
+                LO.paramorder(r,:,:) = permute(cat(1,x,y,z),[3 2 1]);
             case 'sequential'
-                [x,y] = ind2sub([n_speeds,n_colors,n_alphas],1:cond_num);
-                LO.paramorder(r,:,:) = cat(2,x,y);
+                [x,y,z] = ind2sub([n_speeds,n_colors,n_alphas],1:cond_num);
+                LO.paramorder(r,:,:) = cat(2,x,y,z);
         end
     end
     
     %define the expansion speeds in terms of pix/s
     LO.seqspeeds = pixperdeg.*LO.expansion_speeds(LO.paramorder(:,:,1)).*Param.ifi;
     LO.seqcolors = LO.colors(LO.paramorder(:,:,2)',:);
-    LO.seqalphas = LO.alphas(LO.paramorder(:,:,3)',:);
+    LO.seqalphas = LO.alphas(LO.paramorder(:,:,3));
     LO.seqtimes = LO.time_perstimulus(LO.paramorder(:,:,1));
-    Param.stimSeq(end+1,1) = { repmat(LO.stim_id, 1,n_colors*n_speeds*LO.n_reps*LO.n_alphas) };
+    Param.stimSeq(end+1,1) = { repmat(LO.stim_id, 1,n_colors*n_speeds*n_alphas*LO.n_reps) };
     LO.cnt=1;
     
 %     for r = 1 : LO.n_reps

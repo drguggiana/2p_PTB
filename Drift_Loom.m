@@ -242,7 +242,7 @@ function Drift_Loom
             
         end
         
-        HideCursor;
+%         HideCursor;
         
     elseif test_screen == 1
         mon_pos = get(0,'MonitorPositions');

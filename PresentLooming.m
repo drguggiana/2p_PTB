@@ -69,6 +69,7 @@ function [stimtype, vbl] = PresentLooming( nidaq, screen, vbl, Param, stimtype, 
     %transpose the times and speeds arrays
     seqtimes = stimtype.seqtimes';
     seqspeeds = stimtype.seqspeeds';
+    seqalphas = stimtype.seqalphas';
     seqspeedorder = stimtype.paramorder(:,:,1)';
 
     vblendtime = vbl + seqtimes(stimtype.cnt) - Param.ifi;
@@ -78,12 +79,13 @@ function [stimtype, vbl] = PresentLooming( nidaq, screen, vbl, Param, stimtype, 
 
     %get the current color
     stim_color = stimtype.seqcolors(stimtype.cnt,:);
-    stim_alpha = stimtype.seqalphas(stimtype.cnt,:);
+    stim_alpha = seqalphas(stimtype.cnt);
 
     %also print the current expansion speed
     fprintf(strcat('Current exp speed:',...
         num2str(stimtype.expansion_speeds(seqspeedorder(stimtype.cnt))),...
-        '/Current color:',num2str(stimtype.seqcolors(stimtype.cnt,:)),...
+        '/Current color:',num2str(stimtype.seqcolors(stimtype.cnt,:)),...,
+        '/Current alpha:',num2str(seqalphas(stimtype.cnt)),...,
         '\r\n'))
     %         for i = 1 : frame_stimulus_dur
     frameNr = 0;
@@ -118,7 +120,7 @@ function [stimtype, vbl] = PresentLooming( nidaq, screen, vbl, Param, stimtype, 
         if stimtype.useChecker
 
             % Draw the gaussian apertures  into our full screen aperture mask
-            Screen('FillOval', aperture, [stim_color stim_alpha], centeredRect);
+            Screen('FillOval', aperture, [stim_color floor(stim_alpha*255)], centeredRect);
             Screen('DrawTexture', win, stimtype.radialCheckerboardTexture);
             Screen('DrawTexture', win, aperture);
         else        
